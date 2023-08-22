@@ -10,7 +10,7 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        "title", "description", "image", "type_id"
+        "title", "description", "image", "type_id", "technology_id"
     ]; 
 
     public function type(){
@@ -21,5 +21,6 @@ class Project extends Model
         return $this->belongsToMany(Technology::class);
     }
 }
+
 
 

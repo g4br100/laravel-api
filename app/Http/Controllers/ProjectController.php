@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Support\Facades\Storage;
@@ -46,8 +47,8 @@ class ProjectController extends Controller
     {
         $data = $request->validated();
 
-        /* $img_path = Storage::put('uploads', $data['image']); */
-        $img_path=$data['image']->store('uploads');
+        $img_path = Storage::put('uploads', $data['image']); 
+        /* $img_path=$data['image']->store('uploads'); */
         $data['image']= $img_path;
         $newProject = new Project();
         $newProject->fill($data);
@@ -77,7 +78,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        $types= Type::all();
+        $technologies = Technology::all();
+        return view("admin.projects.edit", compact('project', 'technologies', 'types'));
     }
 
     /**
@@ -87,13 +90,15 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project)
     {
         $data = $request->validated();
+        $project->fill($data);
         $project->update($data);
-        $project->technologies()->sync($data->technologies);
+        $project->technologies()->sync($data['technologies']); 
+        
 
-        return to_route('admin.projects.show', $project )  ;
+        return redirect()->route('admin.projects.show', $project->id );
     }
 
     /**
